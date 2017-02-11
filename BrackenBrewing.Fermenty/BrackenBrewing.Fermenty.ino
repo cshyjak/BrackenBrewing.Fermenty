@@ -13,6 +13,7 @@ bool _relayState = false;
 const int _minimumRelayToggleTime = 15000;
 double _desiredTemperature = 18.0;
 char _msgBuffer[20];
+const int _potPin = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -33,6 +34,7 @@ void setup() {
 
 void loop() {
   _sensors.requestTemperatures();
+  _desiredTemperature = ReadDesiredTemperature();
   
   WriteToScreen(1, 4, dtostrf(_desiredTemperature, 4, 1, _msgBuffer));
   WriteToScreen(2, 4, dtostrf(_sensors.getTempCByIndex(0), 4, 1, _msgBuffer));
@@ -82,5 +84,11 @@ void ToggleRelay(bool desiredState)
       }
     }
   }
+}
+
+double ReadDesiredTemperature()
+{
+  int reading = analogRead(_potPin);
+  return (((reading / 1023.0) * 20.0) + 5.0);
 }
 
