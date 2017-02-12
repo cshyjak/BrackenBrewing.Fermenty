@@ -24,6 +24,7 @@ void setup() {
   _sensors.begin();
   
   pinMode(_relayPin, OUTPUT);
+  digitalWrite(_relayPin, LOW);
 
   _display.write(254); // cursor to beginning of first line
   _display.write(128);
