@@ -25,6 +25,8 @@ void setup() {
   
   pinMode(_relayPin, OUTPUT);
   digitalWrite(_relayPin, LOW);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
 
   _display.write(254); // cursor to beginning of first line
   _display.write(128);
@@ -50,6 +52,18 @@ void loop() {
   {
     ToggleRelay(true);
   }
+
+  Serial.print("{\"DesiredTemp\":");
+  Serial.print(dtostrf(_desiredTemperature, 4, 1, _msgBuffer));
+  Serial.print(",\"CurrentTemp\":");
+  Serial.print(dtostrf(_sensors.getTempCByIndex(0), 4, 1, _msgBuffer));
+  Serial.print(",\"IceZoneTemp\":");
+  Serial.print(dtostrf(_sensors.getTempCByIndex(1), 4, 1, _msgBuffer));
+  Serial.print(",\"AirTemp\":");
+  Serial.print(dtostrf(_sensors.getTempCByIndex(2), 4, 1, _msgBuffer));
+  Serial.print(",\"RelayState\":");
+  Serial.print(_relayState);
+  Serial.println("}");
 }
 
 void WriteToScreen(int line, int startPosition, const char* text) {
@@ -73,6 +87,7 @@ void ToggleRelay(bool desiredState)
     if (_relayState == false)
     {
       digitalWrite(_relayPin, HIGH);
+      digitalWrite(LED_BUILTIN, HIGH);
       _relayStartTime = millis();
       _relayState = true;
     }
@@ -81,6 +96,7 @@ void ToggleRelay(bool desiredState)
       if((unsigned long)(millis() - _relayStartTime) >= _minimumRelayToggleTime) 
       {
         digitalWrite(_relayPin, LOW);
+        digitalWrite(LED_BUILTIN, LOW);
         _relayState = false;
       }
     }
